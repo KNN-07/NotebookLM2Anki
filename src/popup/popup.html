@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotebookLM2Anki</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📚 NotebookLM2Anki</h1>
+      <div id="status-indicator" class="status checking">
+        <span class="status-dot"></span>
+        <span id="status-text">Checking...</span>
+      </div>
+    </header>
+
+    <section id="content-section" class="section">
+      <h2>Content Found</h2>
+      <div id="content-info" class="content-info">
+        <div class="content-row">
+          <span class="icon">❓</span>
+          <span id="quiz-count">0 Quiz Questions</span>
+        </div>
+        <div class="content-row">
+          <span class="icon">🗂️</span>
+          <span id="flashcard-count">0 Flashcards</span>
+        </div>
+      </div>
+      <div id="no-content" class="no-content hidden">
+        <p>No content found on this page.</p>
+        <p class="hint">Make sure you're on a NotebookLM notebook page.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Deck Name</h2>
+      <input type="text" id="deck-name" placeholder="Enter deck name..." />
+    </section>
+
+    <section class="section export-section">
+      <h2>Export Options</h2>
+      
+      <button id="btn-anki-connect" class="btn btn-primary" title="Send directly to Anki (requires Anki open with AnkiConnect)">
+        <span class="btn-icon">⚡</span>
+        Send to Anki
+      </button>
+      
+      <button id="btn-apkg" class="btn btn-secondary" title="Download as .apkg file">
+        <span class="btn-icon">📦</span>
+        Download .apkg
+      </button>
+      
+      <div class="btn-group">
+        <button id="btn-csv-all" class="btn btn-tertiary" title="Export all content as CSV">
+          <span class="btn-icon">📄</span>
+          Export CSV
+        </button>
+        <div class="dropdown">
+          <button id="btn-csv-dropdown" class="btn btn-tertiary btn-dropdown">▾</button>
+          <div id="csv-menu" class="dropdown-menu hidden">
+            <button id="btn-csv-quizzes">Quizzes Only</button>
+            <button id="btn-csv-flashcards">Flashcards Only</button>
+            <button id="btn-csv-all-headerless">All (No Header)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div id="message" class="message hidden"></div>
+      <p class="version">v1.0.0</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
