@@ -141,30 +141,6 @@ async function ensureFlashcardModel() {
     return false;
   }
 }
-}
-
-async function ensureFlashcardModel() {
-  const modelName = "NotebookLM Flashcard";
-  const exists = await modelExists(modelName);
-  if (exists) return true;
-  
-  try {
-    await ankiRequest('createModel', {
-      modelName: modelName,
-      inOrderFields: ["Front", "Back"],
-      css: FLASHCARD_STYLING,
-      cardTemplates: [{
-        Name: "Flashcard",
-        Front: "{{Front}}",
-        Back: "{{FrontSide}}<hr id=answer>{{Back}}"
-      }]
-    });
-    return true;
-  } catch (error) {
-    console.error("[NotebookLM2Anki] Failed to create flashcard model:", error);
-    return false;
-  }
-}
 
 // ==================== EXPORT HANDLERS ====================
 
