@@ -31,8 +31,8 @@ const FLASHCARD_FRONT = `<div class="card">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -62,8 +62,8 @@ const FLASHCARD_BACK = `<div class="card">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -116,8 +116,8 @@ const QUIZ_FRONT = `<div class="main-wrapper">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -154,8 +154,8 @@ const QUIZ_BACK = `<div class="main-wrapper">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }

@@ -30,11 +30,8 @@ export const FLASHCARD_FRONT_TEMPLATE = `<div class="card">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        // Convert Block Math: $$ ... $$ -> \\[ ... \\]
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        // Convert Inline Math: $ ... $ -> \\( ... \\)
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
-        // Convert Code: \`...\` -> <code>...</code>
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -64,11 +61,8 @@ export const FLASHCARD_BACK_TEMPLATE = `<div class="card">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        // Convert Block Math: $$ ... $$ -> \\[ ... \\]
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        // Convert Inline Math: $ ... $ -> \\( ... \\)
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
-        // Convert Code: \`...\` -> <code>...</code>
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }

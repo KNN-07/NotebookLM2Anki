@@ -1152,6 +1152,13 @@ INSERT INTO col VALUES(
         }
     }',
     '{}'
-);\n`;
+);\\n`;
+
+// Export classes to window for use in ES modules
+window.Deck = Deck;
+window.Model = Model;
+window.ClozeModel = ClozeModel;
+window.Note = Note;
+window.Package = Package;
 
 } // End GENANKI_LOADED guard

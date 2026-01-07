@@ -85,8 +85,8 @@ export const QUIZ_FRONT_TEMPLATE = `<link href="https://fonts.googleapis.com/ico
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -172,8 +172,8 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
-        let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
