@@ -1,6 +1,9 @@
 // NotebookLM2Anki - Background Service Worker
 // Handles AnkiConnect API calls and extension messaging
 
+import { QUIZ_STYLING, QUIZ_FRONT_TEMPLATE, QUIZ_BACK_TEMPLATE, QUIZ_FIELDS } from '../templates/quiz-model.js';
+import { FLASHCARD_STYLING, FLASHCARD_FRONT_TEMPLATE, FLASHCARD_BACK_TEMPLATE, FLASHCARD_FIELDS } from '../templates/flashcard-model.js';
+
 // Configuration
 const CONFIG = {
   ANKI_CONNECT_URL: "http://127.0.0.1:8765",
@@ -92,32 +95,22 @@ async function addNotes(notes) {
 
 // ==================== NOTE TYPE TEMPLATES ====================
 
-const QUIZ_STYLING = `html{overflow-y:scroll;overflow-x:hidden}body{margin:0;padding:0;width:100%;background-color:#1e1e1e;font-family:'Roboto','Segoe UI',sans-serif;color:#e3e3e3}.card{font-size:16px;line-height:1.6;text-align:left;background-color:#1e1e1e;min-height:100vh;display:flex;flex-direction:column}.main-wrapper{width:100%;min-height:100vh;box-sizing:border-box;display:flex;justify-content:center}.quiz-column{width:100%;max-width:580px;margin:0 auto;padding:60px 20px;display:flex;flex-direction:column;box-sizing:border-box}.question-text{font-size:1.35rem;font-weight:500;margin-bottom:30px;color:#ffffff;line-height:1.5}.options-list{display:flex;flex-direction:column;gap:15px}.option-block{background-color:#2d2d2d;border:1px solid #444746;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px}.option-content{display:flex;align-items:flex-start;font-size:1.05rem}.option-letter{font-weight:bold;margin-right:15px;color:#a8c7fa;min-width:25px}.state-correct{border:2px solid #6dd58c!important;background-color:#252525!important}.state-dimmed{opacity:0.4}.feedback-section{margin-top:12px;display:block;padding-top:15px;border-top:1px solid #444}.thats-right{color:#6dd58c;font-weight:bold;display:flex;align-items:center;gap:10px;font-size:1.1rem;margin-bottom:8px}.rationale-text{color:#cccccc;margin-left:4px;line-height:1.6}.latex-snippet{background-color:#383838;color:#e6b455;padding:2px 6px;border-radius:4px;font-family:'Consolas','Monaco',monospace;font-size:0.95em;border:1px solid #444}`;
-
-const FLASHCARD_STYLING = `html{overflow-y:scroll;overflow-x:hidden}body{margin:0;padding:0;width:100%;background-color:#1e1e1e;font-family:'Roboto','Segoe UI',sans-serif;color:#e3e3e3}.card{font-size:18px;line-height:1.7;text-align:center;background-color:#1e1e1e;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box}.flashcard-container{max-width:600px;width:100%;background-color:#2d2d2d;border:1px solid #444746;border-radius:16px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.3)}.front-section{font-size:1.4rem;font-weight:500;color:#ffffff;line-height:1.6}.divider{display:flex;align-items:center;margin:28px 0;gap:16px}.divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#444746,transparent)}.divider-label{font-size:0.7rem;font-weight:600;letter-spacing:2px;color:#6dd58c;text-transform:uppercase;padding:4px 12px;background-color:rgba(109,213,140,0.1);border-radius:4px}.back-section{font-size:1.25rem;color:#a8c7fa;line-height:1.6}.front-repeat{font-size:1rem;color:#888;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #3a3a3a}.latex-snippet{background-color:#383838;color:#e6b455;padding:2px 6px;border-radius:4px;font-family:'Consolas','Monaco',monospace;font-size:0.95em;border:1px solid #444}code{background-color:#383838;color:#e6b455;padding:2px 6px;border-radius:4px;font-family:'Consolas','Monaco',monospace}@media(max-width:600px){.flashcard-container{padding:24px;margin:0 10px}.front-section{font-size:1.2rem}.back-section{font-size:1.1rem}}`;
-
-const QUIZ_FRONT = `<div class="main-wrapper"><div class="quiz-column"><div class="question-text" id="q-text">{{Question}}</div><div class="options-list"><div class="option-block"><div class="option-content"><span class="option-letter">A.</span><span id="opt1">{{Option1}}</span></div></div><div class="option-block"><div class="option-content"><span class="option-letter">B.</span><span id="opt2">{{Option2}}</span></div></div><div class="option-block"><div class="option-content"><span class="option-letter">C.</span><span id="opt3">{{Option3}}</span></div></div><div class="option-block"><div class="option-content"><span class="option-letter">D.</span><span id="opt4">{{Option4}}</span></div></div></div></div></div><script>(function(){function cleanMath(str){if(!str)return"";let s=str.replace(/\\$\\$(.*?)\\$\\$/gs,'\\\\[$1\\\\]');s=s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g,'\\\\($1\\\\)');s=s.replace(/\`([^\`]+)\`/g,'<code class="latex-snippet">$1</code>');return s}function triggerMath(el){if(typeof MathJax!=='undefined'&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(e=>{})}else if(typeof MathJax!=='undefined'&&MathJax.Hub){MathJax.Hub.Queue(["Typeset",MathJax.Hub,el])}}try{['q-text','opt1','opt2','opt3','opt4'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=cleanMath(el.innerHTML)});setTimeout(()=>triggerMath(document.body),100)}catch(e){}})();<\\/script>`;
-
-const QUIZ_BACK = `<div class="main-wrapper"><div class="quiz-column"><div class="question-text" id="back-q-text">{{Question}}</div><div class="options-list" id="back-options"></div></div></div><div id="data-holder" style="display:none;"><span id="d-opt1">{{Option1}}</span><span id="d-flag1">{{Flag1}}</span><span id="d-rat1">{{Rationale1}}</span><span id="d-opt2">{{Option2}}</span><span id="d-flag2">{{Flag2}}</span><span id="d-rat2">{{Rationale2}}</span><span id="d-opt3">{{Option3}}</span><span id="d-flag3">{{Flag3}}</span><span id="d-rat3">{{Rationale3}}</span><span id="d-opt4">{{Option4}}</span><span id="d-flag4">{{Flag4}}</span><span id="d-rat4">{{Rationale4}}</span></div><script>(function(){function cleanMath(str){if(!str)return"";let s=str.replace(/\\$\\$(.*?)\\$\\$/gs,'\\\\[$1\\\\]');s=s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g,'\\\\($1\\\\)');s=s.replace(/\`([^\`]+)\`/g,'<code class="latex-snippet">$1</code>');return s}function triggerMath(el){if(typeof MathJax!=='undefined'&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(e=>{})}else if(typeof MathJax!=='undefined'&&MathJax.Hub){MathJax.Hub.Queue(["Typeset",MathJax.Hub,el])}}try{document.getElementById('back-q-text').innerHTML=cleanMath(document.getElementById('back-q-text').innerHTML);const letters=['A','B','C','D'];const container=document.getElementById('back-options');for(let i=1;i<=4;i++){const optText=document.getElementById('d-opt'+i)?.innerHTML||'';const flag=(document.getElementById('d-flag'+i)?.innerHTML||'').trim().toLowerCase();const rat=document.getElementById('d-rat'+i)?.innerHTML||'';if(!optText.trim())continue;const isCorrect=flag==='true'||flag==='yes'||flag==='1';const block=document.createElement('div');block.className='option-block '+(isCorrect?'state-correct':'state-dimmed');let html='<div class="option-content"><span class="option-letter">'+letters[i-1]+'.</span><span>'+cleanMath(optText)+'</span></div>';if(isCorrect&&rat.trim()){html+='<div class="feedback-section"><div class="thats-right">Correct!</div><div class="rationale-text">'+cleanMath(rat)+'</div></div>'}block.innerHTML=html;container.appendChild(block)}setTimeout(()=>triggerMath(document.body),100)}catch(e){}})();<\\/script>`;
-
-const FLASHCARD_FRONT = `<div class="card"><div class="flashcard-container"><div class="front-section" id="front-content">{{Front}}</div></div></div><script>(function(){function cleanMath(str){if(!str)return"";let s=str.replace(/\\$\\$(.*?)\\$\\$/gs,'\\\\[$1\\\\]');s=s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g,'\\\\($1\\\\)');s=s.replace(/\`([^\`]+)\`/g,'<code class="latex-snippet">$1</code>');return s}function triggerMath(el){if(typeof MathJax!=='undefined'&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(e=>{})}else if(typeof MathJax!=='undefined'&&MathJax.Hub){MathJax.Hub.Queue(["Typeset",MathJax.Hub,el])}}try{const el=document.getElementById('front-content');el.innerHTML=cleanMath(el.innerHTML);setTimeout(()=>triggerMath(document.body),100)}catch(e){}})();<\\/script>`;
-
-const FLASHCARD_BACK = `<div class="card"><div class="flashcard-container"><div class="front-repeat" id="back-front">{{Front}}</div><div class="divider"><span class="divider-line"></span><span class="divider-label">Answer</span><span class="divider-line"></span></div><div class="back-section" id="back-content">{{Back}}</div></div></div><script>(function(){function cleanMath(str){if(!str)return"";let s=str.replace(/\\$\\$(.*?)\\$\\$/gs,'\\\\[$1\\\\]');s=s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g,'\\\\($1\\\\)');s=s.replace(/\`([^\`]+)\`/g,'<code class="latex-snippet">$1</code>');return s}function triggerMath(el){if(typeof MathJax!=='undefined'&&MathJax.typesetPromise){MathJax.typesetPromise([el]).catch(e=>{})}else if(typeof MathJax!=='undefined'&&MathJax.Hub){MathJax.Hub.Queue(["Typeset",MathJax.Hub,el])}}try{const front=document.getElementById('back-front');const back=document.getElementById('back-content');front.innerHTML=cleanMath(front.innerHTML);back.innerHTML=cleanMath(back.innerHTML);setTimeout(()=>triggerMath(document.body),100)}catch(e){}})();<\\/script>`;
-
 async function ensureQuizModel() {
   const modelName = "NotebookLM Quiz";
   const exists = await modelExists(modelName);
   if (exists) return true;
   
   try {
+    const fieldNames = QUIZ_FIELDS.map(f => f.name);
+    
     await ankiRequest('createModel', {
       modelName: modelName,
-      inOrderFields: ["Question", "Hint", "ArchDiagram", "Option1", "Flag1", "Rationale1", "Option2", "Flag2", "Rationale2", "Option3", "Flag3", "Rationale3", "Option4", "Flag4", "Rationale4"],
+      inOrderFields: fieldNames,
       css: QUIZ_STYLING,
       cardTemplates: [{
         Name: "Quiz Card",
-        Front: QUIZ_FRONT,
-        Back: QUIZ_BACK
+        Front: QUIZ_FRONT_TEMPLATE,
+        Back: QUIZ_BACK_TEMPLATE
       }]
     });
     return true;
@@ -133,14 +126,16 @@ async function ensureFlashcardModel() {
   if (exists) return true;
   
   try {
+    const fieldNames = FLASHCARD_FIELDS.map(f => f.name);
+    
     await ankiRequest('createModel', {
       modelName: modelName,
-      inOrderFields: ["Front", "Back"],
+      inOrderFields: fieldNames,
       css: FLASHCARD_STYLING,
       cardTemplates: [{
         Name: "Flashcard",
-        Front: FLASHCARD_FRONT,
-        Back: FLASHCARD_BACK
+        Front: FLASHCARD_FRONT_TEMPLATE,
+        Back: FLASHCARD_BACK_TEMPLATE
       }]
     });
     return true;
