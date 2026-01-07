@@ -118,8 +118,8 @@ No build step required. Load the extension directly in developer mode.
 ## Credits
 
 This project integrates functionality from:
-- [notebooklm-anki-extension](https://github.com/...): Quiz export with AnkiConnect
-- [flashcardConverter](https://github.com/...): Flashcard extraction and APKG generation
+- [notebooklm-anki-extension](https://github.com/searchswapnil-prog/notebooklm-anki-extension): Quiz export with AnkiConnect
+- [flashcardConverter](https://github.com/Sahal03/flashcardConverter): Flashcard extraction and APKG generation
 
 ### Libraries Used
 - [sql.js](https://github.com/sql-js/sql.js): SQLite compiled to WebAssembly
