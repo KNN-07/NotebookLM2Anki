@@ -152,22 +152,20 @@ export const QUIZ_FRONT_TEMPLATE = `<link href="https://fonts.googleapis.com/ico
 <\/script>`;
 
 export const QUIZ_BACK_TEMPLATE = `{{FrontSide}}
-<div id="back-data" style="display:none;">
-    <div data-opt="A" data-flag="{{Flag1}}" data-reason="{{Rationale1}}"></div>
-    <div data-opt="B" data-flag="{{Flag2}}" data-reason="{{Rationale2}}"></div>
-    <div data-opt="C" data-flag="{{Flag3}}" data-reason="{{Rationale3}}"></div>
-    <div data-opt="D" data-flag="{{Flag4}}" data-reason="{{Rationale4}}"></div>
-    <div id="diagram-check">{{ArchDiagram}}</div>
+<style>
+/* Override front styles to show answers */
+.card.back .option-block { pointer-events: none; }
+.card.back .feedback-section { display: block !important; }
+</style>
+<div id="back-flags" style="display:none;">
+    <span data-idx="0">{{Flag1}}</span>
+    <span data-idx="1">{{Flag2}}</span>
+    <span data-idx="2">{{Flag3}}</span>
+    <span data-idx="3">{{Flag4}}</span>
+    <span id="diagram-data">{{ArchDiagram}}</span>
 </div>
 <script>
 (function() {
-    function cleanMath(str) {
-        if (!str) return "";
-        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
-        s = s.replace(/\$((?:[^$]|\\$)+?)\$/g, '\\($1\\)');
-        s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
-        return s;
-    }
     function triggerMath(element) {
         if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
             MathJax.typesetPromise([element]).catch(err => {});
@@ -176,9 +174,13 @@ export const QUIZ_BACK_TEMPLATE = `{{FrontSide}}
         }
     }
     try {
-        // Handle diagram display
-        const diagramCheck = document.getElementById('diagram-check');
-        const diagramContent = diagramCheck ? diagramCheck.innerHTML.trim() : "";
+        // Add .back class to card for CSS targeting
+        const cardEl = document.querySelector('.card');
+        if (cardEl) cardEl.classList.add('back');
+        
+        // Handle diagram
+        const diagramData = document.getElementById('diagram-data');
+        const diagramContent = diagramData ? diagramData.innerHTML.trim() : "";
         if (diagramContent.length > 0) {
             const wrapper = document.querySelector('.main-wrapper');
             if (wrapper) {
@@ -191,41 +193,37 @@ export const QUIZ_BACK_TEMPLATE = `{{FrontSide}}
             }
         }
         
-        // Update options to show answers
+        // Get flags and update options
+        const flags = document.querySelectorAll('#back-flags span[data-idx]');
         const frontOptions = document.getElementById('front-options');
         if (!frontOptions) return;
         
-        const optionBlocks = frontOptions.querySelectorAll('.option-block');
-        const backDataItems = document.querySelectorAll('#back-data > div[data-opt]');
+        const optionBlocks = Array.from(frontOptions.querySelectorAll('.option-block'));
         
-        const iconCheck = '<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
-        const iconClose = '<svg class="status-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
-        
-        backDataItems.forEach((item, index) => {
-            if (index >= optionBlocks.length) return;
-            const block = optionBlocks[index];
-            const flagStr = (item.dataset.flag || "").trim().toLowerCase();
+        flags.forEach((flagSpan, idx) => {
+            if (idx >= optionBlocks.length) return;
+            const block = optionBlocks[idx];
+            const flagStr = (flagSpan.textContent || "").trim().toLowerCase();
             const isCorrect = (flagStr === "true" || flagStr === "yes" || flagStr === "1");
-            const rawReason = item.dataset.reason || "";
-            const reason = cleanMath(rawReason);
             
-            // Remove click handlers
-            const newBlock = block.cloneNode(true);
-            block.parentNode.replaceChild(newBlock, block);
+            // Apply styling based on correctness
+            if (isCorrect) {
+                block.classList.add('state-correct');
+                block.classList.remove('state-wrong', 'state-dimmed');
+            } else {
+                block.classList.add('state-dimmed');
+                block.classList.remove('state-correct', 'state-wrong');
+            }
             
-            const feedbackSection = newBlock.querySelector('.feedback-section');
-            if (feedbackSection) {
-                if (isCorrect) {
-                    newBlock.classList.add('state-correct');
-                    feedbackSection.innerHTML = '<div class="thats-right">' + iconCheck + '<span>That\'s right!</span></div><div class="rationale-text">' + reason + '</div>';
-                } else {
-                    newBlock.classList.add('state-dimmed');
-                    feedbackSection.innerHTML = '<div class="not-quite">' + iconClose + '<span>Not quite</span></div><div class="rationale-text">' + reason + '</div>';
-                }
-                feedbackSection.style.display = 'block';
-                triggerMath(feedbackSection);
+            // Make sure feedback is visible
+            const feedback = block.querySelector('.feedback-section');
+            if (feedback) {
+                feedback.style.display = 'block';
+                triggerMath(feedback);
             }
         });
+        
+        setTimeout(() => triggerMath(document.body), 100);
     } catch (e) { console.log("Back Template Error:", e); }
 })();
 <\/script>`;
