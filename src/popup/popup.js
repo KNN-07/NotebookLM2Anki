@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnCsvQuizzes = document.getElementById('btn-csv-quizzes');
   const btnCsvFlashcards = document.getElementById('btn-csv-flashcards');
   const btnCsvHeaderless = document.getElementById('btn-csv-all-headerless');
+  const btnCsvQuizAsFlashcard = document.getElementById('btn-csv-quiz-as-flashcard');
 
   // State
   let extractedData = null;
@@ -318,6 +319,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     return csv;
   }
 
+  function quizToFlashcardCSV(quizzes, includeHeader) {
+    let csv = includeHeader ? 'Front,Back\n' : '';
+    
+    for (const quiz of quizzes) {
+      const question = quiz.question || '';
+      const options = quiz.options || [];
+      const correctOption = options.find(opt => opt.isCorrect);
+      const answer = correctOption ? correctOption.text : '';
+      
+      if (question && answer) {
+        csv += `${escapeCSV(question)},${escapeCSV(answer)}\n`;
+      }
+    }
+    
+    return csv;
+  }
+
+  function exportQuizAsFlashcard() {
+    if (!extractedData) return;
+    
+    const deckName = getDeckName().replace(/[^a-z0-9]/gi, '_');
+    
+    if (extractedData.quizzes?.length > 0) {
+      const csv = quizToFlashcardCSV(extractedData.quizzes, true);
+      downloadCSV(csv, `${deckName}-quiz-as-flashcard.csv`);
+      showMessage('✅ Quiz exported as flashcards!', 'success');
+    } else {
+      showMessage('❌ No quizzes found to convert', 'error');
+    }
+  }
+
   function escapeCSV(value) {
     if (!value) return '""';
     const escaped = String(value).replace(/"/g, '""');
@@ -354,6 +386,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   btnCsvHeaderless.addEventListener('click', () => {
     exportCSV('all', false);
+    csvMenu.classList.add('hidden');
+  });
+
+  btnCsvQuizAsFlashcard.addEventListener('click', () => {
+    exportQuizAsFlashcard();
     csvMenu.classList.add('hidden');
   });
 
