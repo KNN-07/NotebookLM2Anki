@@ -223,20 +223,24 @@
     btn.id = CONFIG.BUTTON_ID;
     btn.className = "mdc-button mat-mdc-button mat-mdc-outlined-button mat-unthemed mat-mdc-button-base";
     btn.style.cssText = `
-      border: 1px solid rgb(55, 56, 59); 
-      border-radius: 18px; 
-      padding: 0 20px; 
-      margin-right: 10px; 
-      color: #e3e3e3; 
-      height: 40px; 
-      display: inline-flex; 
-      align-items: center; 
-      justify-content: center; 
-      cursor: not-allowed; 
+      border: 1px solid #3c4043;
+      border-radius: 20px;
+      padding: 0 16px;
+      margin-right: 8px;
+      color: #e3e3e3;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: not-allowed;
       opacity: 0.5;
       background: transparent;
-      font-family: inherit;
+      font-family: 'Google Sans', Roboto, sans-serif;
       font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.25px;
+      transition: all 0.2s ease;
+      outline: none;
     `;
     
     const downloadIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`;
@@ -244,13 +248,23 @@
     btn.innerHTML = `
       <span class="mat-mdc-button-persistent-ripple mdc-button__ripple"></span>
       <span class="mat-mdc-button-touch-target"></span>
-      <span class="mdc-button__label" style="display: flex; align-items: center; gap: 8px;">
+      <span class="mdc-button__label" style="display: flex; align-items: center; gap: 6px;">
         ${downloadIconSvg}
         <span>Anki Export</span>
       </span>
     `;
     
     btn.disabled = true;
+    
+    btn.onmouseenter = () => {
+      if (!btn.disabled) {
+        btn.style.background = 'rgba(232, 234, 237, 0.08)';
+      }
+    };
+    
+    btn.onmouseleave = () => {
+      btn.style.background = 'transparent';
+    };
     
     btn.onclick = (e) => {
       e.preventDefault();
@@ -303,8 +317,9 @@
         if (labelText) labelText.innerText = "Anki Export";
         btn.style.opacity = "1";
         btn.style.cursor = "pointer";
-        btn.style.borderColor = "rgb(55, 56, 59)";
+        btn.style.borderColor = "#3c4043";
         btn.style.color = "#e3e3e3";
+        btn.style.background = "transparent";
         btn.disabled = false;
         break;
         
@@ -312,13 +327,15 @@
         if (labelText) labelText.innerText = `Saved ${count}!`;
         btn.style.borderColor = "#6dd58c";
         btn.style.color = "#6dd58c";
+        btn.style.background = "rgba(109, 213, 140, 0.1)";
         setTimeout(() => updateButtonState("ready"), 3000);
         break;
         
       case "error":
         if (labelText) labelText.innerText = "Error";
-        btn.style.borderColor = "#ffb4ab";
-        btn.style.color = "#ffb4ab";
+        btn.style.borderColor = "#f28b82";
+        btn.style.color = "#f28b82";
+        btn.style.background = "rgba(242, 139, 130, 0.1)";
         setTimeout(() => updateButtonState("ready"), 3000);
         break;
     }

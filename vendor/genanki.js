@@ -14,12 +14,15 @@
  * @license AGPL-3.0 License
  */
 
-BASE91_TABLE = [
+if (typeof window.GENANKI_LOADED === 'undefined') {
+window.GENANKI_LOADED = true;
+
+var BASE91_TABLE = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
   't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
   'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4',
   '5', '6', '7', '8', '9', '!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '-', '.', '/', ':',
-  ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~']
+  ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~'];
 
 function ankiHash(fields) {
   const str = fields.join('__')
@@ -43,8 +46,8 @@ function ankiHash(fields) {
   return rv_reversed.reverse().join('')
 }
 
-const MODEL_STD = 0
-const MODEL_CLOZE = 1
+var MODEL_STD = 0
+var MODEL_CLOZE = 1
 
 class Model {
     constructor(props) {
@@ -1149,5 +1152,6 @@ INSERT INTO col VALUES(
         }
     }',
     '{}'
-);
-`;
+);\n`;
+
+} // End GENANKI_LOADED guard

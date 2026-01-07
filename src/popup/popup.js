@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!extractedData) return;
     
     btnAnkiConnect.disabled = true;
-    btnAnkiConnect.innerHTML = '<span class="btn-icon">⏳</span> Sending...';
+    btnAnkiConnect.classList.add('loading');
     
     try {
       const response = await chrome.runtime.sendMessage({
@@ -210,15 +210,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       
       if (response && response.success) {
-        showMessage(`✅ Sent ${response.count} cards to Anki!`, 'success');
+        btnAnkiConnect.classList.add('success');
+        showMessage(`Sent ${response.count} cards to Anki!`, 'success');
+        setTimeout(() => btnAnkiConnect.classList.remove('success'), 2000);
       } else {
-        showMessage(`❌ ${response?.error || 'Failed to send to Anki'}`, 'error');
+        btnAnkiConnect.classList.add('error');
+        showMessage(response?.error || 'Failed to send to Anki', 'error');
+        setTimeout(() => btnAnkiConnect.classList.remove('error'), 2000);
       }
     } catch (error) {
-      showMessage(`❌ ${error.message}`, 'error');
+      btnAnkiConnect.classList.add('error');
+      showMessage(error.message, 'error');
+      setTimeout(() => btnAnkiConnect.classList.remove('error'), 2000);
     } finally {
       btnAnkiConnect.disabled = false;
-      btnAnkiConnect.innerHTML = '<span class="btn-icon">⚡</span> Send to Anki';
+      btnAnkiConnect.classList.remove('loading');
       updateButtonStates();
     }
   });
@@ -228,32 +234,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!extractedData) return;
     
     btnApkg.disabled = true;
-    btnApkg.innerHTML = '<span class="btn-icon">⏳</span> Generating...';
+    btnApkg.classList.add('loading');
     
     try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      
-      // Inject vendor scripts and generate APKG
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['vendor/sql.js', 'vendor/jszip.min.js', 'vendor/FileSaver.min.js', 'vendor/genanki.js']
-      });
-      
       const deckName = getDeckName();
       
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: generateApkgInPage,
-        args: [extractedData, deckName]
+      const response = await chrome.runtime.sendMessage({
+        action: 'generateApkg',
+        data: extractedData,
+        deckName: deckName
       });
       
-      showMessage(`✅ Downloaded ${deckName}.apkg`, 'success');
+      if (response && response.success) {
+        btnApkg.classList.add('success');
+        showMessage(`Downloaded ${deckName}.apkg`, 'success');
+        setTimeout(() => btnApkg.classList.remove('success'), 2000);
+      } else {
+        btnApkg.classList.add('error');
+        showMessage(response?.error || 'Failed to generate APKG', 'error');
+        setTimeout(() => btnApkg.classList.remove('error'), 2000);
+      }
     } catch (error) {
       console.error('[NotebookLM2Anki] APKG error:', error);
-      showMessage(`❌ ${error.message}`, 'error');
+      btnApkg.classList.add('error');
+      showMessage(error.message, 'error');
+      setTimeout(() => btnApkg.classList.remove('error'), 2000);
     } finally {
       btnApkg.disabled = false;
-      btnApkg.innerHTML = '<span class="btn-icon">📦</span> Download .apkg';
+      btnApkg.classList.remove('loading');
       updateButtonStates();
     }
   });
@@ -278,7 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     
-    showMessage('✅ CSV downloaded!', 'success');
+    showMessage('CSV downloaded!', 'success');
   }
 
   function quizzesToCSV(quizzes, includeHeader) {
@@ -344,9 +352,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (extractedData.quizzes?.length > 0) {
       const csv = quizToFlashcardCSV(extractedData.quizzes, true);
       downloadCSV(csv, `${deckName}-quiz-as-flashcard.csv`);
-      showMessage('✅ Quiz exported as flashcards!', 'success');
+      showMessage('Quiz exported as flashcards!', 'success');
     } else {
-      showMessage('❌ No quizzes found to convert', 'error');
+      showMessage('No quizzes found to convert', 'error');
     }
   }
 
@@ -372,6 +380,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnCsvDropdown.addEventListener('click', (e) => {
     e.stopPropagation();
     csvMenu.classList.toggle('hidden');
+    btnCsvDropdown.classList.toggle('active');
   });
   
   btnCsvQuizzes.addEventListener('click', () => {
@@ -397,83 +406,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Close dropdown when clicking outside
   document.addEventListener('click', () => {
     csvMenu.classList.add('hidden');
+    btnCsvDropdown.classList.remove('active');
   });
-
-  // APKG generation function to inject into page
-  function generateApkgInPage(data, deckName) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Wait for SQL.js to initialize
-        const SQL = await initSqlJs({
-          locateFile: file => chrome.runtime.getURL(`vendor/${file}`)
-        });
-        
-        const deckId = Math.floor(Math.random() * (2 ** 31 - 2 ** 30) + 2 ** 30);
-        const deck = new Deck(deckId, deckName);
-        
-        // Create quiz model
-        const quizModel = new Model({
-          name: "NotebookLM Quiz",
-          id: "1609234567890",
-          flds: [
-            { name: "Question" }, { name: "Hint" }, { name: "ArchDiagram" },
-            { name: "Option1" }, { name: "Flag1" }, { name: "Rationale1" },
-            { name: "Option2" }, { name: "Flag2" }, { name: "Rationale2" },
-            { name: "Option3" }, { name: "Flag3" }, { name: "Rationale3" },
-            { name: "Option4" }, { name: "Flag4" }, { name: "Rationale4" }
-          ],
-          req: [[0, "all", [0]]],
-          tmpls: [{
-            name: "Quiz Card",
-            qfmt: "{{Question}}",
-            afmt: "{{Question}}<hr>{{Option1}} {{Flag1}}"
-          }]
-        });
-        
-        // Create flashcard model
-        const flashcardModel = new Model({
-          name: "NotebookLM Flashcard",
-          id: "1609234567891",
-          flds: [{ name: "Front" }, { name: "Back" }],
-          req: [[0, "all", [0]]],
-          tmpls: [{
-            name: "Flashcard",
-            qfmt: "{{Front}}",
-            afmt: "{{FrontSide}}<hr>{{Back}}"
-          }]
-        });
-        
-        // Add quizzes
-        if (data.quizzes) {
-          for (const quiz of data.quizzes) {
-            const options = quiz.options || [];
-            const fields = [
-              quiz.question || "", quiz.hint || "", "",
-              options[0]?.text || "", options[0]?.isCorrect ? "True" : "False", options[0]?.rationale || "",
-              options[1]?.text || "", options[1]?.isCorrect ? "True" : "False", options[1]?.rationale || "",
-              options[2]?.text || "", options[2]?.isCorrect ? "True" : "False", options[2]?.rationale || "",
-              options[3]?.text || "", options[3]?.isCorrect ? "True" : "False", options[3]?.rationale || ""
-            ];
-            deck.addNote(quizModel.note(fields));
-          }
-        }
-        
-        // Add flashcards
-        if (data.flashcards) {
-          for (const card of data.flashcards) {
-            deck.addNote(flashcardModel.note([card.front || "", card.back || ""]));
-          }
-        }
-        
-        // Generate package
-        const pkg = new Package();
-        pkg.addDeck(deck);
-        pkg.writeToFile(`${deckName.replace(/[^a-z0-9]/gi, '_')}.apkg`);
-        
-        resolve(true);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
 });

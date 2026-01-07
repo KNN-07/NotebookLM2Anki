@@ -9,7 +9,14 @@
 <body>
   <div class="container">
     <header>
-      <h1>📚 NotebookLM2Anki</h1>
+      <div class="header-title">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <path d="M8 7h8M8 11h8M8 15h5"></path>
+        </svg>
+        <h1>NotebookLM2Anki</h1>
+      </div>
       <div id="status-indicator" class="status checking">
         <span class="status-dot"></span>
         <span id="status-text">Checking...</span>
@@ -20,15 +27,27 @@
       <h2>Content Found</h2>
       <div id="content-info" class="content-info">
         <div class="content-row">
-          <span class="icon">❓</span>
+          <svg class="content-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
           <span id="quiz-count">0 Quiz Questions</span>
         </div>
         <div class="content-row">
-          <span class="icon">🗂️</span>
+          <svg class="content-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M7 8h10M7 12h6"></path>
+          </svg>
           <span id="flashcard-count">0 Flashcards</span>
         </div>
       </div>
       <div id="no-content" class="no-content hidden">
+        <svg class="no-content-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
         <p>No content found on this page.</p>
         <p class="hint">Make sure you're on a NotebookLM notebook page.</p>
       </div>
@@ -43,27 +62,65 @@
       <h2>Export Options</h2>
       
       <button id="btn-anki-connect" class="btn btn-primary" title="Send directly to Anki (requires Anki open with AnkiConnect)">
-        <span class="btn-icon">⚡</span>
-        Send to Anki
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span class="btn-text">Send to Anki</span>
+        <span class="btn-spinner hidden"></span>
       </button>
       
       <button id="btn-apkg" class="btn btn-secondary" title="Download as .apkg file">
-        <span class="btn-icon">📦</span>
-        Download .apkg
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span class="btn-text">Download .apkg</span>
+        <span class="btn-spinner hidden"></span>
       </button>
       
       <div class="btn-group">
         <button id="btn-csv-all" class="btn btn-tertiary" title="Export all content as CSV">
-          <span class="btn-icon">📄</span>
-          Export CSV
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span class="btn-text">Export CSV</span>
         </button>
         <div class="dropdown">
-          <button id="btn-csv-dropdown" class="btn btn-tertiary btn-dropdown">▾</button>
+          <button id="btn-csv-dropdown" class="btn btn-tertiary btn-dropdown">
+            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
           <div id="csv-menu" class="dropdown-menu hidden">
-            <button id="btn-csv-quizzes">Quizzes Only</button>
-            <button id="btn-csv-flashcards">Flashcards Only</button>
-            <button id="btn-csv-all-headerless">All (No Header)</button>
-            <button id="btn-csv-quiz-as-flashcard">Quiz as Flashcard</button>
+            <button id="btn-csv-quizzes">
+              <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              </svg>
+              Quizzes Only
+            </button>
+            <button id="btn-csv-flashcards">
+              <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              </svg>
+              Flashcards Only
+            </button>
+            <button id="btn-csv-all-headerless">
+              <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              </svg>
+              All (No Header)
+            </button>
+            <button id="btn-csv-quiz-as-flashcard">
+              <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 3h5v5M8 21H3v-5M21 3l-9 9M3 21l9-9"></path>
+              </svg>
+              Quiz as Flashcard
+            </button>
           </div>
         </div>
       </div>
@@ -71,7 +128,7 @@
 
     <footer>
       <div id="message" class="message hidden"></div>
-      <p class="version">v1.0.0</p>
+      <p class="version">v1.0.1</p>
     </footer>
   </div>
 

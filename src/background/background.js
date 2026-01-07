@@ -31,6 +31,9 @@ async function handleMessage(request, sender) {
     case 'sendBatchToAnki':
       return await handleLegacySendBatch(request);
     
+    case 'generateApkg':
+      return await handleGenerateApkg(request);
+    
     default:
       return { success: false, error: `Unknown action: ${request.action}` };
   }
@@ -297,3 +300,49 @@ async function handleLegacySendBatch(request) {
 
 // Log when service worker starts
 console.log("[NotebookLM2Anki] Background service worker started");
+
+// ==================== OFFSCREEN DOCUMENT FOR APKG ====================
+
+let creatingOffscreen = null;
+
+async function setupOffscreenDocument() {
+  const offscreenUrl = chrome.runtime.getURL('src/offscreen/offscreen.html');
+  
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT'],
+    documentUrls: [offscreenUrl]
+  });
+
+  if (existingContexts.length > 0) {
+    return;
+  }
+
+  if (creatingOffscreen) {
+    await creatingOffscreen;
+  } else {
+    creatingOffscreen = chrome.offscreen.createDocument({
+      url: offscreenUrl,
+      reasons: ['DOM_SCRAPING'],
+      justification: 'Generate APKG files using sql.js WebAssembly'
+    });
+    await creatingOffscreen;
+    creatingOffscreen = null;
+  }
+}
+
+async function handleGenerateApkg(request) {
+  try {
+    await setupOffscreenDocument();
+    
+    const response = await chrome.runtime.sendMessage({
+      action: 'generateApkg',
+      data: request.data,
+      deckName: request.deckName
+    });
+    
+    return response;
+  } catch (error) {
+    console.error("[NotebookLM2Anki] APKG generation error:", error);
+    return { success: false, error: error.message };
+  }
+}

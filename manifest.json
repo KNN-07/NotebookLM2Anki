@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
   "name": "NotebookLM2Anki",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Export NotebookLM Quizzes & Flashcards to Anki - via AnkiConnect, .apkg, or CSV",
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "offscreen"
   ],
   "host_permissions": [
     "https://notebooklm.google.com/*",
