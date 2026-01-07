@@ -41,6 +41,14 @@ async function handleMessage(request, sender) {
 
 // ==================== ANKICONNECT API ====================
 
+function cleanMath(str) {
+  if (!str) return "";
+  let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+  s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
+  s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
+  return s;
+}
+
 async function ankiRequest(action, params = {}) {
   const response = await fetch(CONFIG.ANKI_CONNECT_URL, {
     method: 'POST',
@@ -189,21 +197,21 @@ async function sendQuizzesToAnki(quizzes, deckName) {
       deckName: targetDeck,
       modelName: "NotebookLM Quiz",
       fields: {
-        Question: quiz.question || "",
-        Hint: quiz.hint || "",
+        Question: cleanMath(quiz.question || ""),
+        Hint: cleanMath(quiz.hint || ""),
         ArchDiagram: "",
-        Option1: options[0]?.text || "",
+        Option1: cleanMath(options[0]?.text || ""),
         Flag1: options[0]?.isCorrect ? "True" : "False",
-        Rationale1: options[0]?.rationale || "",
-        Option2: options[1]?.text || "",
+        Rationale1: cleanMath(options[0]?.rationale || ""),
+        Option2: cleanMath(options[1]?.text || ""),
         Flag2: options[1]?.isCorrect ? "True" : "False",
-        Rationale2: options[1]?.rationale || "",
-        Option3: options[2]?.text || "",
+        Rationale2: cleanMath(options[1]?.rationale || ""),
+        Option3: cleanMath(options[2]?.text || ""),
         Flag3: options[2]?.isCorrect ? "True" : "False",
-        Rationale3: options[2]?.rationale || "",
-        Option4: options[3]?.text || "",
+        Rationale3: cleanMath(options[2]?.rationale || ""),
+        Option4: cleanMath(options[3]?.text || ""),
         Flag4: options[3]?.isCorrect ? "True" : "False",
-        Rationale4: options[3]?.rationale || ""
+        Rationale4: cleanMath(options[3]?.rationale || "")
       },
       tags: CONFIG.DEFAULT_TAGS
     };
@@ -225,8 +233,8 @@ async function sendFlashcardsToAnki(flashcards, deckName) {
     deckName: targetDeck,
     modelName: "NotebookLM Flashcard",
     fields: {
-      Front: card.front || "",
-      Back: card.back || ""
+      Front: cleanMath(card.front || ""),
+      Back: cleanMath(card.back || "")
     },
     tags: CONFIG.DEFAULT_TAGS
   }));
@@ -274,21 +282,21 @@ async function handleLegacySendBatch(request) {
       deckName: targetDeck,
       modelName: "NotebookLM Quiz",
       fields: {
-        Question: card.question || "",
-        Hint: card.hint || "",
+        Question: cleanMath(card.question || ""),
+        Hint: cleanMath(card.hint || ""),
         ArchDiagram: "",
-        Option1: card.option1 || "",
+        Option1: cleanMath(card.option1 || ""),
         Flag1: card.flag1 || "False",
-        Rationale1: card.rationale1 || "",
-        Option2: card.option2 || "",
+        Rationale1: cleanMath(card.rationale1 || ""),
+        Option2: cleanMath(card.option2 || ""),
         Flag2: card.flag2 || "False",
-        Rationale2: card.rationale2 || "",
-        Option3: card.option3 || "",
+        Rationale2: cleanMath(card.rationale2 || ""),
+        Option3: cleanMath(card.option3 || ""),
         Flag3: card.flag3 || "False",
-        Rationale3: card.rationale3 || "",
-        Option4: card.option4 || "",
+        Rationale3: cleanMath(card.rationale3 || ""),
+        Option4: cleanMath(card.option4 || ""),
         Flag4: card.flag4 || "False",
-        Rationale4: card.rationale4 || ""
+        Rationale4: cleanMath(card.rationale4 || "")
       },
       tags: CONFIG.DEFAULT_TAGS
     }));
