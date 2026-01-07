@@ -158,7 +158,7 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
             <div class="options-list" id="back-options"></div>
         </div>
     </div>
-    <div class="diagram-column" id="diagram-container">{{ArchDiagram}}</div>
+    <div class="diagram-column" id="diagram-container" style="display:none;">{{ArchDiagram}}</div>
 </div>
 <div id="back-data" style="display:none;">
     <div id="d-question">{{Question}}</div>
@@ -173,7 +173,7 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
-        s = s.replace(/\$((?:[^$]|\\\$)+?)\$/g, '\\($1\\)');
+        s = s.replace(/\$((?:[^$]|\\\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -190,12 +190,13 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
         const root = document.getElementById('layout-root');
         const diagramCol = document.getElementById('diagram-container');
         if (diagramContent.length > 0) { root.classList.add('mode-split'); diagramCol.style.display = 'flex'; }
-        else { root.classList.add('mode-centered'); diagramCol.style.display = 'none'; }
+        else { root.classList.add('mode-centered'); }
         const qRaw = document.getElementById('d-question').innerHTML;
         document.getElementById('back-q-text').innerHTML = cleanMath(qRaw);
         const container = document.getElementById('back-options');
         const dataItems = document.querySelectorAll('#back-data > div[data-opt]');
         const iconCheck = '<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+        const iconClose = '<svg class="status-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
         dataItems.forEach(item => {
             const letter = item.dataset.opt;
             const rawText = item.dataset.text || "";
@@ -212,7 +213,7 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
                 block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section" style="display:block;"><div class="thats-right">' + iconCheck + " That's right!</div><div class=\"rationale-text\">" + reason + '</div></div>';
             } else {
                 block.classList.add('state-dimmed');
-                block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div>';
+                block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section" style="display:block;"><div class="not-quite">' + iconClose + ' Not quite</div><div class="rationale-text">' + reason + '</div></div>';
             }
             container.appendChild(block);
         });
