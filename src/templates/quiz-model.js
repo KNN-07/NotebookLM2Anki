@@ -22,7 +22,7 @@ export const QUIZ_FIELDS = [
   { name: "Rationale4" }
 ];
 
-export const QUIZ_STYLING = `/* NotebookLM Quiz Card v1.0 */
+export const QUIZ_STYLING = `/* NotebookLM Quiz Card v1.1 */
 html { overflow-y: scroll; overflow-x: hidden; }
 body { margin: 0; padding: 0; width: 100%; background-color: #1e1e1e; font-family: 'Roboto', 'Segoe UI', sans-serif; color: #e3e3e3; }
 .card { font-size: 16px; line-height: 1.6; text-align: left; background-color: #1e1e1e; min-height: 100vh; display: flex; flex-direction: column; }
@@ -86,7 +86,7 @@ export const QUIZ_FRONT_TEMPLATE = `<link href="https://fonts.googleapis.com/ico
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -124,7 +124,7 @@ export const QUIZ_FRONT_TEMPLATE = `<link href="https://fonts.googleapis.com/ico
             const isCorrect = (flagStr === "true" || flagStr === "yes" || flagStr === "1");
             const btn = document.createElement('div');
             btn.className = 'option-block';
-            btn.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section"><div class="' + (isCorrect ? 'thats-right' : 'not-quite') + '">' + (isCorrect ? iconCheck : iconClose) + '<span>' + (isCorrect ? "That\\'s right!" : "Not quite") + '</span></div><div class="rationale-text">' + reason + '</div></div>';
+            btn.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section"><div class="' + (isCorrect ? 'thats-right' : 'not-quite') + '">' + (isCorrect ? iconCheck : iconClose) + '<span>' + (isCorrect ? "That's right!" : "Not quite") + '</span></div><div class="rationale-text">' + reason + '</div></div>';
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.option-block').forEach(b => {
                     b.classList.remove('state-correct', 'state-wrong');
@@ -149,7 +149,7 @@ export const QUIZ_FRONT_TEMPLATE = `<link href="https://fonts.googleapis.com/ico
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) { console.log("Template Error:", e); }
 })();
-</script>`;
+<\/script>`;
 
 export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
     <div class="quiz-column">
@@ -173,7 +173,7 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -209,7 +209,7 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
             block.className = 'option-block';
             if (isCorrect) {
                 block.classList.add('state-correct');
-                block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section" style="display:block;"><div class="thats-right">' + iconCheck + " That\\'s right!</div><div class=\"rationale-text\">" + reason + '</div></div>';
+                block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section" style="display:block;"><div class="thats-right">' + iconCheck + " That's right!</div><div class=\"rationale-text\">" + reason + '</div></div>';
             } else {
                 block.classList.add('state-dimmed');
                 block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div>';
@@ -219,9 +219,8 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) { console.log("Back Template Error:", e); }
 })();
-</script>`;
+<\/script>`;
 
-// Export the complete model definition for genanki-js
 export function getQuizModel() {
   return {
     name: QUIZ_MODEL_NAME,

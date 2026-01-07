@@ -32,7 +32,7 @@ const FLASHCARD_FRONT = `<div class="card">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -49,7 +49,7 @@ const FLASHCARD_FRONT = `<div class="card">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) {}
 })();
-</script>`;
+<\/script>`;
 
 const FLASHCARD_BACK = `<div class="card">
   <div class="content">
@@ -63,7 +63,7 @@ const FLASHCARD_BACK = `<div class="card">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -82,7 +82,7 @@ const FLASHCARD_BACK = `<div class="card">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) {}
 })();
-</script>`;
+<\/script>`;
 
 const QUIZ_CSS = `html { overflow-y: scroll; overflow-x: hidden; }
 body { margin: 0; padding: 0; width: 100%; background-color: #1e1e1e; font-family: 'Roboto', 'Segoe UI', sans-serif; color: #e3e3e3; }
@@ -117,7 +117,7 @@ const QUIZ_FRONT = `<div class="main-wrapper">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -136,7 +136,7 @@ const QUIZ_FRONT = `<div class="main-wrapper">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) {}
 })();
-</script>`;
+<\/script>`;
 
 const QUIZ_BACK = `<div class="main-wrapper">
   <div class="quiz-column">
@@ -155,7 +155,7 @@ const QUIZ_BACK = `<div class="main-wrapper">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -188,7 +188,7 @@ const QUIZ_BACK = `<div class="main-wrapper">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) {}
 })();
-</script>`;
+<\/script>`;
 
 async function generateApkg(data, deckName) {
   await initSql();

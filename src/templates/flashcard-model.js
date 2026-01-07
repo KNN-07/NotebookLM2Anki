@@ -9,7 +9,7 @@ export const FLASHCARD_FIELDS = [
   { name: "Back" }
 ];
 
-export const FLASHCARD_STYLING = `/* NotebookLM Flashcard v1.0 */
+export const FLASHCARD_STYLING = `/* NotebookLM Flashcard v1.1 */
 html { overflow-y: scroll; overflow-x: hidden; }
 body { margin: 0; padding: 0; width: 100%; background-color: #1e1e1e; font-family: 'Roboto', 'Segoe UI', sans-serif; color: #e3e3e3; }
 .card { font-size: 18px; line-height: 1.7; text-align: center; background-color: #1e1e1e; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box; }
@@ -30,8 +30,11 @@ export const FLASHCARD_FRONT_TEMPLATE = `<div class="card">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
+        // Convert Block Math: $$ ... $$ -> \\[ ... \\]
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        // Convert Inline Math: $ ... $ -> \\( ... \\)
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        // Convert Code: \`...\` -> <code>...</code>
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -48,7 +51,7 @@ export const FLASHCARD_FRONT_TEMPLATE = `<div class="card">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) { console.log("Flashcard Front Error:", e); }
 })();
-</script>`;
+<\/script>`;
 
 export const FLASHCARD_BACK_TEMPLATE = `<div class="card">
   <div class="content">
@@ -61,8 +64,11 @@ export const FLASHCARD_BACK_TEMPLATE = `<div class="card">
 (function() {
     function cleanMath(str) {
         if (!str) return "";
+        // Convert Block Math: $$ ... $$ -> \\[ ... \\]
         let s = str.replace(/\\$\\$(.*?)\\$\\$/gs, '\\\\[$1\\\\]');
-        s = s.replace(/\\$((?:[^$]|\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        // Convert Inline Math: $ ... $ -> \\( ... \\)
+        s = s.replace(/\\$((?:[^$]|\\\\\\$)+?)\\$/g, '\\\\($1\\\\)');
+        // Convert Code: \`...\` -> <code>...</code>
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
@@ -81,7 +87,7 @@ export const FLASHCARD_BACK_TEMPLATE = `<div class="card">
         setTimeout(() => triggerMath(document.body), 100);
     } catch (e) { console.log("Flashcard Back Error:", e); }
 })();
-</script>`;
+<\/script>`;
 
 // Export the complete model definition for genanki-js
 export function getFlashcardModel() {

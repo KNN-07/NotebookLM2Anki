@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NotebookLM2Anki",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Export NotebookLM Quizzes & Flashcards to Anki - via AnkiConnect, .apkg, or CSV",
   "permissions": [
     "activeTab",
@@ -48,5 +48,8 @@
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   }
 }
