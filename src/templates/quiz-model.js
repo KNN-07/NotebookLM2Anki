@@ -151,21 +151,12 @@ export const QUIZ_FRONT_TEMPLATE = `<link href="https://fonts.googleapis.com/ico
 })();
 <\/script>`;
 
-export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
-    <div class="quiz-column">
-        <div class="quiz-content-wrapper">
-            <div class="question-text" id="back-q-text"></div>
-            <div class="options-list" id="back-options"></div>
-        </div>
-    </div>
-    <div class="diagram-column" id="diagram-container" style="display:none;">{{ArchDiagram}}</div>
-</div>
+export const QUIZ_BACK_TEMPLATE = `{{FrontSide}}
 <div id="back-data" style="display:none;">
-    <div id="d-question">{{Question}}</div>
-    <div data-opt="A" data-text="{{Option1}}" data-flag="{{Flag1}}" data-reason="{{Rationale1}}"></div>
-    <div data-opt="B" data-text="{{Option2}}" data-flag="{{Flag2}}" data-reason="{{Rationale2}}"></div>
-    <div data-opt="C" data-text="{{Option3}}" data-flag="{{Flag3}}" data-reason="{{Rationale3}}"></div>
-    <div data-opt="D" data-text="{{Option4}}" data-flag="{{Flag4}}" data-reason="{{Rationale4}}"></div>
+    <div data-opt="A" data-flag="{{Flag1}}" data-reason="{{Rationale1}}"></div>
+    <div data-opt="B" data-flag="{{Flag2}}" data-reason="{{Rationale2}}"></div>
+    <div data-opt="C" data-flag="{{Flag3}}" data-reason="{{Rationale3}}"></div>
+    <div data-opt="D" data-flag="{{Flag4}}" data-reason="{{Rationale4}}"></div>
     <div id="diagram-check">{{ArchDiagram}}</div>
 </div>
 <script>
@@ -185,39 +176,56 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
         }
     }
     try {
+        // Handle diagram display
         const diagramCheck = document.getElementById('diagram-check');
         const diagramContent = diagramCheck ? diagramCheck.innerHTML.trim() : "";
-        const root = document.getElementById('layout-root');
-        const diagramCol = document.getElementById('diagram-container');
-        if (diagramContent.length > 0) { root.classList.add('mode-split'); diagramCol.style.display = 'flex'; }
-        else { root.classList.add('mode-centered'); }
-        const qRaw = document.getElementById('d-question').innerHTML;
-        document.getElementById('back-q-text').innerHTML = cleanMath(qRaw);
-        const container = document.getElementById('back-options');
-        const dataItems = document.querySelectorAll('#back-data > div[data-opt]');
+        if (diagramContent.length > 0) {
+            const wrapper = document.querySelector('.main-wrapper');
+            if (wrapper) {
+                wrapper.classList.remove('mode-centered');
+                wrapper.classList.add('mode-split');
+                const diagramCol = document.createElement('div');
+                diagramCol.className = 'diagram-column';
+                diagramCol.innerHTML = diagramContent;
+                wrapper.appendChild(diagramCol);
+            }
+        }
+        
+        // Update options to show answers
+        const frontOptions = document.getElementById('front-options');
+        if (!frontOptions) return;
+        
+        const optionBlocks = frontOptions.querySelectorAll('.option-block');
+        const backDataItems = document.querySelectorAll('#back-data > div[data-opt]');
+        
         const iconCheck = '<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
         const iconClose = '<svg class="status-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
-        dataItems.forEach(item => {
-            const letter = item.dataset.opt;
-            const rawText = item.dataset.text || "";
-            const rawReason = item.dataset.reason || "";
-            if (!rawText.trim() && !rawReason.trim()) return;
-            const text = cleanMath(rawText);
-            const reason = cleanMath(rawReason);
+        
+        backDataItems.forEach((item, index) => {
+            if (index >= optionBlocks.length) return;
+            const block = optionBlocks[index];
             const flagStr = (item.dataset.flag || "").trim().toLowerCase();
             const isCorrect = (flagStr === "true" || flagStr === "yes" || flagStr === "1");
-            const block = document.createElement('div');
-            block.className = 'option-block';
-            if (isCorrect) {
-                block.classList.add('state-correct');
-                block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section" style="display:block;"><div class="thats-right">' + iconCheck + " That's right!</div><div class=\"rationale-text\">" + reason + '</div></div>';
-            } else {
-                block.classList.add('state-dimmed');
-                block.innerHTML = '<div class="option-content"><span class="option-letter">' + letter + '.</span><span>' + text + '</span></div><div class="feedback-section" style="display:block;"><div class="not-quite">' + iconClose + ' Not quite</div><div class="rationale-text">' + reason + '</div></div>';
+            const rawReason = item.dataset.reason || "";
+            const reason = cleanMath(rawReason);
+            
+            // Remove click handlers
+            const newBlock = block.cloneNode(true);
+            block.parentNode.replaceChild(newBlock, block);
+            
+            const feedbackSection = newBlock.querySelector('.feedback-section');
+            if (feedbackSection) {
+                if (isCorrect) {
+                    newBlock.classList.add('state-correct');
+                    feedbackSection.innerHTML = '<div class="thats-right">' + iconCheck + '<span>That\'s right!</span></div><div class="rationale-text">' + reason + '</div>';
+                } else {
+                    newBlock.classList.add('state-dimmed');
+                    feedbackSection.innerHTML = '<div class="not-quite">' + iconClose + '<span>Not quite</span></div><div class="rationale-text">' + reason + '</div>';
+                }
+                feedbackSection.style.display = 'block';
+                triggerMath(feedbackSection);
             }
-            container.appendChild(block);
         });
-        setTimeout(() => triggerMath(document.body), 100);
     } catch (e) { console.log("Back Template Error:", e); }
 })();
 <\/script>`;
