@@ -173,7 +173,7 @@ export const QUIZ_BACK_TEMPLATE = `<div id="layout-root" class="main-wrapper">
     function cleanMath(str) {
         if (!str) return "";
         let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
-        s = s.replace(/\$((?:[^$]|\\\\$)+?)\$/g, '\\($1\\)');
+        s = s.replace(/\$((?:[^$]|\\$)+?)\$/g, '\\($1\\)');
         s = s.replace(/\`([^\`]+)\`/g, '<code class="latex-snippet">$1</code>');
         return s;
     }
