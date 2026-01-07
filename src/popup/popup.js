@@ -2,6 +2,13 @@
 // Handles popup UI interactions and export actions
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Set version from manifest
+  const manifest = chrome.runtime.getManifest();
+  const versionDisplay = document.getElementById('version-display');
+  if (versionDisplay) {
+    versionDisplay.textContent = `v${manifest.version}`;
+  }
+
   // DOM Elements
   const statusIndicator = document.getElementById('status-indicator');
   const statusText = document.getElementById('status-text');
