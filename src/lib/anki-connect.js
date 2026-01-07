@@ -2,6 +2,7 @@
 // Handles communication with local Anki instance via AnkiConnect
 
 import { CONFIG, QUIZ_FIELDS, FLASHCARD_FIELDS } from './constants.js';
+import { cleanMath } from './utils.js';
 import { 
   QUIZ_MODEL_NAME, QUIZ_MODEL_ID, QUIZ_FIELDS as QUIZ_MODEL_FIELDS,
   QUIZ_FRONT_TEMPLATE, QUIZ_BACK_TEMPLATE, QUIZ_STYLING 
@@ -138,21 +139,21 @@ export async function sendQuizzesToAnki(quizzes, deckName) {
       deckName: targetDeck,
       modelName: QUIZ_MODEL_NAME,
       fields: {
-        Question: quiz.question || "",
-        Hint: quiz.hint || "",
+        Question: cleanMath(quiz.question || ""),
+        Hint: cleanMath(quiz.hint || ""),
         ArchDiagram: "",
-        Option1: options[0]?.text || "",
+        Option1: cleanMath(options[0]?.text || ""),
         Flag1: options[0]?.isCorrect ? "True" : "False",
-        Rationale1: options[0]?.rationale || "",
-        Option2: options[1]?.text || "",
+        Rationale1: cleanMath(options[0]?.rationale || ""),
+        Option2: cleanMath(options[1]?.text || ""),
         Flag2: options[1]?.isCorrect ? "True" : "False",
-        Rationale2: options[1]?.rationale || "",
-        Option3: options[2]?.text || "",
+        Rationale2: cleanMath(options[1]?.rationale || ""),
+        Option3: cleanMath(options[2]?.text || ""),
         Flag3: options[2]?.isCorrect ? "True" : "False",
-        Rationale3: options[2]?.rationale || "",
-        Option4: options[3]?.text || "",
+        Rationale3: cleanMath(options[2]?.rationale || ""),
+        Option4: cleanMath(options[3]?.text || ""),
         Flag4: options[3]?.isCorrect ? "True" : "False",
-        Rationale4: options[3]?.rationale || ""
+        Rationale4: cleanMath(options[3]?.rationale || "")
       },
       tags: CONFIG.DEFAULT_TAGS
     };
@@ -179,8 +180,8 @@ export async function sendFlashcardsToAnki(flashcards, deckName) {
     deckName: targetDeck,
     modelName: FLASHCARD_MODEL_NAME,
     fields: {
-      Front: card.front || "",
-      Back: card.back || ""
+      Front: cleanMath(card.front || ""),
+      Back: cleanMath(card.back || "")
     },
     tags: CONFIG.DEFAULT_TAGS
   }));
