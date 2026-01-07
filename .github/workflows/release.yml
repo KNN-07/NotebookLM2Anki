@@ -1,0 +1,127 @@
+name: Build and Release CRX
+
+on:
+  push:
+    paths:
+      - 'manifest.json'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: 'Version override (leave empty to use manifest.json version)'
+        required: false
+        type: string
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check version change
+        id: check
+        run: |
+          CURRENT_VERSION=$(jq -r '.version' manifest.json)
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ github.event.inputs.version_override }}" ]; then
+              CURRENT_VERSION="${{ github.event.inputs.version_override }}"
+            fi
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "Manual trigger - releasing version $CURRENT_VERSION"
+            exit 0
+          fi
+          
+          git show HEAD~1:manifest.json > /tmp/old_manifest.json 2>/dev/null || echo '{"version":"0.0.0"}' > /tmp/old_manifest.json
+          OLD_VERSION=$(jq -r '.version' /tmp/old_manifest.json)
+          
+          echo "Old version: $OLD_VERSION"
+          echo "Current version: $CURRENT_VERSION"
+          
+          if [ "$CURRENT_VERSION" != "$OLD_VERSION" ]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "Version changed from $OLD_VERSION to $CURRENT_VERSION"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "Version unchanged"
+          fi
+          
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create ZIP package
+        id: package
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
+        with:
+          extensionDir: '.'
+          zipFilePath: 'build/extension.zip'
+
+      - name: Build CRX
+        id: build-crx
+        uses: cardinalby/webext-buildtools-chrome-crx-action@v2
+        with:
+          zipFilePath: 'build/extension.zip'
+          crxFilePath: 'build/NotebookLM2Anki-v${{ needs.check-version.outputs.version }}.crx'
+          privateKey: ${{ secrets.CHROME_CRX_PRIVATE_KEY }}
+        continue-on-error: true
+
+      - name: Rename ZIP with version
+        run: |
+          VERSION="${{ needs.check-version.outputs.version }}"
+          mv build/extension.zip "build/NotebookLM2Anki-v${VERSION}.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          body: |
+            ## NotebookLM2Anki v${{ needs.check-version.outputs.version }}
+            
+            ### Installation
+            
+            #### Option 1: Load Unpacked (Recommended)
+            1. Download the ZIP file below
+            2. Extract to a folder
+            3. Go to `chrome://extensions/`
+            4. Enable "Developer mode" (toggle in top right)
+            5. Click "Load unpacked" and select the extracted folder
+            
+            #### Option 2: CRX File (if available)
+            1. Download the CRX file
+            2. Drag and drop into Chrome extensions page
+            
+            ### Features
+            - Export NotebookLM Quizzes & Flashcards to Anki
+            - AnkiConnect integration for direct export
+            - APKG file generation for offline import
+            - CSV export for universal compatibility
+            - Export quizzes as simple flashcards (Question → Answer)
+            
+            ### What's New
+            See [commit history](../../commits/main) for changes.
+          files: |
+            build/NotebookLM2Anki-v${{ needs.check-version.outputs.version }}.zip
+            build/NotebookLM2Anki-v${{ needs.check-version.outputs.version }}.crx
+          fail_on_unmatched_files: false
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
