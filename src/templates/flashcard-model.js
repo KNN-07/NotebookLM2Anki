@@ -10,8 +10,8 @@ export const FLASHCARD_FIELDS = [
 ];
 
 export const FLASHCARD_STYLING = `html { overflow-y: scroll; overflow-x: hidden; }
-body { margin: 0; padding: 0; width: 100%; background-color: #1e1e1e; font-family: 'Roboto', 'Segoe UI', sans-serif; color: #e3e3e3; }
-.card { font-size: 18px; line-height: 1.7; text-align: center; background-color: #1e1e1e; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box; }
+body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-family: 'Roboto', 'Segoe UI', sans-serif; color: #e3e3e3; }
+.card { font-size: 18px; line-height: 1.7; text-align: center; background-color: transparent; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box; }
 .flashcard-container { max-width: 600px; width: 100%; background-color: #2d2d2d; border: 1px solid #444746; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 .front-section { font-size: 1.4rem; font-weight: 500; color: #ffffff; line-height: 1.6; }
 .divider { display: flex; align-items: center; margin: 28px 0; gap: 16px; }
