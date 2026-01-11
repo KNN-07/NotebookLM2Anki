@@ -181,7 +181,7 @@ async function handleSendToAnki(request) {
 }
 
 async function sendQuizzesToAnki(quizzes, deckName) {
-  const targetDeck = `${CONFIG.DEFAULT_PARENT_DECK}::${deckName}`;
+  const targetDeck = `${CONFIG.DEFAULT_PARENT_DECK}::${deckName} - Quiz`;
   
   await createDeck(targetDeck);
   await ensureQuizModel();
@@ -219,7 +219,7 @@ async function sendQuizzesToAnki(quizzes, deckName) {
 }
 
 async function sendFlashcardsToAnki(flashcards, deckName) {
-  const targetDeck = `${CONFIG.DEFAULT_PARENT_DECK}::${deckName}`;
+  const targetDeck = `${CONFIG.DEFAULT_PARENT_DECK}::${deckName} - Flashcard`;
   
   await createDeck(targetDeck);
   await ensureFlashcardModel();
@@ -268,7 +268,7 @@ async function handleLegacySendBatch(request) {
   }
   
   try {
-    const targetDeck = `${CONFIG.DEFAULT_PARENT_DECK}::${deckTitle || 'Default Notebook'}`;
+    const targetDeck = `${CONFIG.DEFAULT_PARENT_DECK}::${deckTitle || 'Default Notebook'} - Quiz`;
     
     await createDeck(targetDeck);
     await ensureQuizModel();

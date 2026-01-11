@@ -31,9 +31,6 @@ const QUIZ_BACK = `<div class="main-wrapper"><div class="quiz-column"><div class
 async function generateApkg(data, deckName) {
   await initSql();
   
-  const deckId = Math.floor(Math.random() * (2 ** 31 - 2 ** 30) + 2 ** 30);
-  const deck = new Deck(deckId, deckName);
-  
   const quizModel = new Model({
     name: "NotebookLM Quiz",
     id: "1609234567890",
@@ -58,7 +55,12 @@ async function generateApkg(data, deckName) {
     css: FLASHCARD_CSS
   });
   
-  if (data.quizzes) {
+  const pkg = new Package();
+  
+  if (data.quizzes && data.quizzes.length > 0) {
+    const quizDeckId = Math.floor(Math.random() * (2 ** 31 - 2 ** 30) + 2 ** 30);
+    const quizDeck = new Deck(quizDeckId, `${deckName} - Quiz`);
+    
     for (const quiz of data.quizzes) {
       const options = quiz.options || [];
       const fields = [
@@ -68,18 +70,20 @@ async function generateApkg(data, deckName) {
         options[2]?.text || "", options[2]?.isCorrect ? "True" : "False", options[2]?.rationale || "",
         options[3]?.text || "", options[3]?.isCorrect ? "True" : "False", options[3]?.rationale || ""
       ];
-      deck.addNote(quizModel.note(fields));
+      quizDeck.addNote(quizModel.note(fields));
     }
+    pkg.addDeck(quizDeck);
   }
   
-  if (data.flashcards) {
+  if (data.flashcards && data.flashcards.length > 0) {
+    const flashcardDeckId = Math.floor(Math.random() * (2 ** 31 - 2 ** 30) + 2 ** 30);
+    const flashcardDeck = new Deck(flashcardDeckId, `${deckName} - Flashcard`);
+    
     for (const card of data.flashcards) {
-      deck.addNote(flashcardModel.note([card.front || "", card.back || ""]));
+      flashcardDeck.addNote(flashcardModel.note([card.front || "", card.back || ""]));
     }
+    pkg.addDeck(flashcardDeck);
   }
-  
-  const pkg = new Package();
-  pkg.addDeck(deck);
   pkg.writeToFile(`${deckName.replace(/[^a-z0-9]/gi, '_')}.apkg`);
   
   const totalCards = (data.quizzes?.length || 0) + (data.flashcards?.length || 0);
