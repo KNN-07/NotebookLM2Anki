@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnCsvHeaderless = document.getElementById('btn-csv-all-headerless');
   const btnCsvQuizAsFlashcard = document.getElementById('btn-csv-quiz-as-flashcard');
 
+  const deckPreview = document.getElementById('deck-preview');
+  const previewQuiz = document.getElementById('preview-quiz');
+  const previewFlashcard = document.getElementById('preview-flashcard');
+
   // State
   let extractedData = null;
   let ankiConnected = false;
@@ -166,6 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     contentInfo.classList.remove('hidden');
     noContent.classList.add('hidden');
     
+    updateDeckPreview();
     updateButtonStates();
   }
 
@@ -190,6 +195,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   function getDeckName() {
     return deckNameInput.value.trim() || extractedData?.title || 'NotebookLM Export';
   }
+
+  function updateDeckPreview() {
+    const baseName = getDeckName();
+    const hasQuizzes = extractedData?.quizzes?.length > 0;
+    const hasFlashcards = extractedData?.flashcards?.length > 0;
+    
+    if (!hasQuizzes && !hasFlashcards) {
+      deckPreview.classList.add('hidden');
+      return;
+    }
+    
+    deckPreview.classList.remove('hidden');
+    
+    if (hasQuizzes) {
+      previewQuiz.classList.remove('hidden');
+      previewQuiz.querySelector('.preview-name').textContent = `${baseName} - Quiz`;
+    } else {
+      previewQuiz.classList.add('hidden');
+    }
+    
+    if (hasFlashcards) {
+      previewFlashcard.classList.remove('hidden');
+      previewFlashcard.querySelector('.preview-name').textContent = `${baseName} - Flashcard`;
+    } else {
+      previewFlashcard.classList.add('hidden');
+    }
+  }
+
+  deckNameInput.addEventListener('input', updateDeckPreview);
 
   function showMessage(text, type = 'info') {
     messageEl.textContent = text;
